@@ -1,0 +1,35 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>myvoice</title>
+</head>
+<body>
+
+<h1>myvoice</h1>
+
+<script type="module">
+
+const init = async (audioCtx) => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const source = audioCtx.createMediaStreamSource(stream);
+  source.connect(audioCtx.destination);
+};
+
+const audioInit = (callback) => {
+  const div = document.createElement("div");
+  div.textContent = "CLICK ANYWHERE TO START";
+  document.body.appendChild(div);
+  const audioInitInner = () => {
+    div.remove();
+    document.body.removeEventListener("click", audioInitInner);
+    if (!navigator.mediaDevices.getUserMedia) {
+      throw new Error("getUserMedia not supported on your browser!");
+    }
+    const audioCtx = new AudioContext();
+    callback(audioCtx);
+  };
+  document.body.addEventListener("click", audioInitInner);
+};
+
+audioInit(init);
+
+</script>
+</html>
