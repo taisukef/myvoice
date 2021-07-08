@@ -7,8 +7,7 @@
 
 <script type="module">
 
-const init = async (audioCtx) => {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+const init = async (stream, audioCtx) => {
   const source = audioCtx.createMediaStreamSource(stream);
   source.connect(audioCtx.destination);
 };
@@ -17,14 +16,15 @@ const audioInit = (callback) => {
   const div = document.createElement("div");
   div.textContent = "CLICK ANYWHERE TO START";
   document.body.appendChild(div);
-  const audioInitInner = () => {
+  const audioInitInner = async () => {
     div.remove();
     document.body.removeEventListener("click", audioInitInner);
     if (!navigator.mediaDevices.getUserMedia) {
       throw new Error("getUserMedia not supported on your browser!");
     }
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const audioCtx = new AudioContext();
-    callback(audioCtx);
+    callback(stream, audioCtx);
   };
   document.body.addEventListener("click", audioInitInner);
 };
